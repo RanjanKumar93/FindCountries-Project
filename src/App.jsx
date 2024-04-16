@@ -4,12 +4,18 @@ import axios from "axios";
 function App() {
   const [search, setSearch] = useState("");
   const [country, setCountry] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filtered, setFiltered] = useState([]);
 
   useEffect(() => {
+    setLoading(true);
     axios
       .get(`https://studies.cs.helsinki.fi/restcountries/api/all`)
       .then((res) => {
         setCountry([...res.data, ...country]);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, []);
 
@@ -21,11 +27,18 @@ function App() {
 
   const handleSearchChange = (event) => {
     setSearch(event.target.value);
+    setFiltered((prev) => [
+      ...countryName.filter((x) =>
+        x.toLowerCase().includes(search.toLocaleLowerCase())
+      ),
+    ]);
   };
 
-  let filtered = countryName.filter((x) =>
-    x.toLowerCase().includes(search.toLocaleLowerCase())
-  );
+  function showCountryHandler(country) {
+    setFiltered((prev) => 
+      [...countryName.filter((x) => x.toLowerCase() === country.toLowerCase())]
+    );
+  }
 
   let outputData;
   if (search.length === 0) {
@@ -35,7 +48,8 @@ function App() {
   } else if (filtered.length > 1) {
     outputData = filtered.map((country, index) => (
       <p style={{ marginBottom: "-15px" }} key={index}>
-        {country} <button onClick={() => setSearch(country)}>show</button>
+        {country}{" "}
+        <button onClick={() => showCountryHandler(country)}>show</button>
       </p>
     ));
   } else if (filtered.length === 1) {
@@ -69,6 +83,10 @@ function App() {
         </div>
       </>
     );
+  }
+
+  if (loading) {
+    return <p>Loading...</p>;
   }
 
   return (
