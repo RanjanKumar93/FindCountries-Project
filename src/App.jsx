@@ -35,9 +35,10 @@ function App() {
   };
 
   function showCountryHandler(country) {
-    setFiltered((prev) => 
-      [...countryName.filter((x) => x.toLowerCase() === country.toLowerCase())]
-    );
+    setSearch(country);
+    setFiltered((prev) => [
+      ...countryName.filter((x) => x.toLowerCase() === country.toLowerCase()),
+    ]);
   }
 
   let outputData;
